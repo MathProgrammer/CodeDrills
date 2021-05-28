@@ -1,0 +1,40 @@
+We can do it in O(n) time with two pointers, after the array is sorted. 
+Each element is touched at most once. 
+
+Initially L-> 0 and R-> n - 1 
+
+If(A[L] + A[R] >= T), reduce R by one. 
+We do not need to check any pair (L, R + 1) because the sum will only be greater. 
+
+If(A[L] + A[R] < T), compare this with the answer and increase the value of L by 1
+We do not need to check (L - 1, R) because we will only get a smaller sum. 
+
+------
+
+class MaxPairSum 
+{
+	public:
+	int pairSum(vector<int> A, int target) 
+	{
+		// Code here
+		sort(A.begin(), A.end());
+		
+		int answer = -1;
+		for(int i = 0, j = A.size() - 1; i < j;)
+		{
+			while(A[i] + A[j] >= target)
+			{
+				j--;
+			}
+			
+			if(A[i] + A[j] < target && i < j)
+			{
+				answer = max(answer, A[i] + A[j]);
+				
+				i++;
+			}
+		}
+		
+		return answer;
+	}
+};
