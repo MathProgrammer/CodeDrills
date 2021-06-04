@@ -1,0 +1,43 @@
+Let f(i) be the maximum money we can get upto the first i shops. 
+
+We have 2 options - 
+
+1. Do not take the i-th shop 
+
+  Then, the maximum money we can get is f(i - 1) 
+  
+2. Take the i-th shop
+
+  Then, the maximum money we can get is A[i] + f(i - 2) 
+  
+ f(i) = max(f(i - 1), A[i] + f(i - 2))
+ 
+ The answer is f(n). 
+
+-----
+
+class MoneyHeist
+{
+public:
+	int robMaximumMoney(vector<int> A) 
+	{
+		vector <int> maximum_money(A.size(), 0);
+		for(int i = 0; i < A.size(); i++)
+		{
+			if(i == 0)
+			{
+				maximum_money[i] = A[i];
+				continue;
+			}
+			else if(i == 1)
+			{
+				maximum_money[i] = max(maximum_money[i - 1], A[i]);
+				continue;
+			}
+			
+			maximum_money[i] = max(maximum_money[i - 1], A[i] + maximum_money[i - 2]);
+		}
+		
+		return (maximum_money.size() == 0 ? -1 : maximum_money.back());
+	}
+};
