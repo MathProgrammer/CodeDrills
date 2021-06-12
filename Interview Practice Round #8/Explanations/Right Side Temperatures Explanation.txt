@@ -1,0 +1,100 @@
+Firstly, we will compress the numbers so that all N integers are in [1, N] and their initial order is maintained. 
+
+We will process elements from i = N down to 1
+Maintain an array of length N, where initially all elements are 0 
+After processing A[i], add 1 to P[A[i]] 
+
+The number of elements smaller than A[i] to it's right is the sum of P in [1, A[i] - 1] 
+We can use a segment tree to get the sum in O(log n) time
+
+-----
+
+class RightSideSmallerTemperatures 
+{
+	public:
+	
+	vector <int> sum_tree;
+	
+	int get_sum(int n, int left, int right, int query_left, int query_right)
+	{
+		if(query_right < left || right < query_left || query_right < query_left || right < left)
+		{
+			return 0;
+		}
+		
+		if(query_left <= left && right <= query_right)
+		{
+			return sum_tree[n];
+		}
+		
+		int mid = (left + right)/2;
+		int left_sum = get_sum(LEFT(n), left, mid, query_left, query_right);
+		int right_sum = get_sum(RIGHT(n), mid + 1, right, query_left, query_right);
+		
+		return (left_sum + right_sum);
+	}
+	
+	void update(int n, int left, int right, int position, int value)
+	{
+		if(position < left || right < position || right < left)
+		{
+			return;
+		}
+		
+		if(left == right)
+		{
+			sum_tree[n] += value;
+			return;
+		}
+		
+		int mid = (left + right)/2;
+		update(LEFT(n), left, mid, position, value);
+		update(RIGHT(n), mid + 1, right, position, value);
+		
+		sum_tree[n] = sum_tree[LEFT(n)] + sum_tree[RIGHT(n)];
+	}
+	
+	void compress_coordinates(vector <int> &A)
+	{
+		vector <int> sorted_A(A.size());
+		for(int i = 0; i < A.size(); i++)
+		{
+			sorted_A[i] = A[i];
+		}
+		
+		sort(all(sorted_A));
+		
+		map <int, int> label;
+		int index = 1;
+		for(int i = 0; i < sorted_A.size(); i++)
+		{
+			if(i == 0 || sorted_A[i] != sorted_A[i - 1])
+			{
+				label[sorted_A[i]] = index++;
+			}
+		}
+		
+		for(int i = 0; i < A.size(); i++)
+		{
+			A[i] = label[A[i]]; 
+		}  
+	}
+					  
+	vector<int> getSmallerTemperaturesCount(vector<int> A) 
+	{
+		compress_coordinates(A);
+		
+		int n = A.size();
+		sum_tree.resize(4*n + 1, 0);
+		
+		vector <int> inversions(n, 0);
+		for(int i = n - 1; i >= 0; i--)
+		{
+			inversions[i] = get_sum(1, 1, n, 1, A[i] - 1);
+			
+			update(1, 1, n, A[i], 1);
+		}
+		
+		return inversions;
+	}
+};
