@@ -1,0 +1,38 @@
+We can do it in O(n) space by using a frequency array. 
+
+Otherwise, we can use the signs of the array elements as true/false flags in order to do it in O(1) space 
+
+Whenever we come across an element A[i], we will make index |A[i]| negative. 
+
+In the end, the elements which are positive indicate the missing indices
+
+Put all of them in a missing vector
+
+-----
+
+#include<vector>
+#include <iostream>
+#include <algorithm>
+using namespace std;
+class MissingNumbers {
+public:
+	vector<int> getMissingNumbers(vector<int> array) 
+	{
+		for(int i = 0; i < array.size(); i++)
+		{
+			if(array[abs(array[i]) - 1] > 0)
+			{
+				array[abs(array[i]) - 1] *= -1; 
+			}
+		}
+		
+		vector <int> missing; 
+		for(int i = 0; i < array.size(); i++)
+		{
+			if(array[i] > 0)
+				missing.push_back(i + 1);
+		}
+		
+		return missing;
+	}
+};
